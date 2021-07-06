@@ -1,0 +1,86 @@
+<?php
+
+namespace Drupal\liutia\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\file\Entity\File;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+/**
+ * Provides route responses for the liutia module.
+ */
+class LiutiaController extends ControllerBase {
+
+  /**
+   * Form build interface.
+   *
+   * @var Drupal\Core\Form\FormBase
+   */
+  protected $formBuilder;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->formBuilder = $container->get('form_builder');
+    return $instance;
+  }
+
+  /**
+   * Return form for vidguks.
+   */
+  public function form() {
+    $form = $this->formBuilder->getForm('\Drupal\liutia\Form\VdForm');
+    return $form;
+  }
+
+  /**
+   * Get all vidguks for page.
+   *
+   * @return array
+   *   A simple array.
+   */
+  public function load() {
+    $connection = \Drupal::service('database');
+    $query = $connection->select('liutia', 'a');
+    $query->fields('a', ['name', 'mail', 'nomer', 'vidguk', 'AVA', 'created', 'image', 'id']);
+    $result = $query->execute()->fetchAll();
+    return $result;
+  }
+
+  /**
+   * Render all vidguks entries.
+   */
+  public function report() {
+    $info = json_decode(json_encode($this->load()), TRUE);
+    $info = array_reverse($info);
+    $form = $this->form();
+    $rows = [];
+    foreach ($info as &$value) {
+      $fid = $value['image'];
+      $file = File::load($fid);
+      $value['image'] = [
+        '#type' => 'image',
+        '#theme' => 'image_style',
+        '#style_name' => 'large',
+        '#uri' => $file->getFileUri(),
+      ];
+      $value['images'] = file_url_transform_relative(file_create_url($file->getFileUri()));
+      $renderer = \Drupal::service('renderer');
+      $value['image'] = $renderer->render($value['image']);
+
+      $avafid = $value['AVA'];
+      $avafile = File::load($avafid);
+      $value['AVA'] = !empty($avafile) ? file_url_transform_relative(file_create_url($avafile->getFileUri())) : '';
+
+      array_push($rows, $value);
+    }
+    return [
+      '#theme' => 'vd_template',
+      '#items' => $rows,
+      '#form' => $form,
+    ];
+  }
+
+}

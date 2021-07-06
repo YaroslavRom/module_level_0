@@ -1,0 +1,30 @@
+liutia.vd_page:
+  path: '/liutia/vd'
+  defaults:
+    _controller: '\Drupal\liutia\Controller\LiutiaController::report'
+    _title: 'Hello! You can add here your vidguk.'
+  requirements:
+    _permission: 'access content'
+
+liutia.vd_delete_page:
+  path: '/liutia/vdDel/{cid}'
+  defaults:
+    _form: '\Drupal\liutia\Form\VdDeleteForm'
+    _title: 'Remove or not remove?'
+  requirements:
+    _permission: 'administer nodes'
+
+liutia.vd_edit_page:
+  path: '/admin/liutia/vdChange/{cid}'
+  defaults:
+    _form: '\Drupal\liutia\Form\VdChangeForm'
+    _title: 'You can edit vidguk here.'
+  requirements:
+    _permission: 'administer nodes'
+
+liutiaadmin.vd_page:
+  path: '/admin/structure/vd'
+  defaults:
+    _form: '\Drupal\liutia\Form\VdadminForm'
+  requirements:
+    _permission: 'administer nodes'
