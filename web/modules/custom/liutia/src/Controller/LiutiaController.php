@@ -60,7 +60,7 @@ class LiutiaController extends ControllerBase {
     foreach ($info as &$value) {
       $fid = $value['image'];
       $file = File::load($fid);
-      $value['image'] = !empty($avafile) ? file_url_transform_relative(file_create_url($file->getFileUri())) : '';
+      $value['image'] = !empty($file) ? file_url_transform_relative(file_create_url($file->getFileUri())) : '';
 
       $avafid = $value['AVA'];
       $avafile = File::load($avafid);
