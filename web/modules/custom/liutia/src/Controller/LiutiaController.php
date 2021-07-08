@@ -60,15 +60,7 @@ class LiutiaController extends ControllerBase {
     foreach ($info as &$value) {
       $fid = $value['image'];
       $file = File::load($fid);
-      $value['image'] = [
-        '#type' => 'image',
-        '#theme' => 'image_style',
-        '#style_name' => 'large',
-        '#uri' => $file->getFileUri(),
-      ];
-      $value['images'] = file_url_transform_relative(file_create_url($file->getFileUri()));
-      $renderer = \Drupal::service('renderer');
-      $value['image'] = $renderer->render($value['image']);
+      $value['image'] = !empty($avafile) ? file_url_transform_relative(file_create_url($file->getFileUri())) : '';
 
       $avafid = $value['AVA'];
       $avafile = File::load($avafid);
